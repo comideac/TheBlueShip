@@ -1,8 +1,8 @@
 <?php
 
-class blacklist {
+/*class blacklist {
     public function _upload(){
-        $dir = 'inventory/unformat/';
+        $dir = 'inventory/';
         $fil = $dir . basename($_FILES['monkey']['name']);
         $ok = 1;
         $fileType = strtolower(pathinfo($fil, PATHINFO_EXTENSION));
@@ -11,6 +11,7 @@ class blacklist {
 }
 $a = new blacklist;
 $a->_upload();
+*/
 ?>
 
 <!DOCTYPE html>
