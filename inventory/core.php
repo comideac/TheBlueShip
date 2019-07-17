@@ -9,6 +9,15 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\IReader;
 use PhpOffice\PhpSpreadsheet\Style\Font;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+/*
+require '../vendor/PHPMailer/src/Exception.php';
+require '../vendor/PHPMailer/src/PHPMailer.php';
+require '../vendor/PHPMailer/src/SMTP.php';
+*/
+
 
 set_time_limit(500);
 
@@ -17,7 +26,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 class onway {
 
-    function way() {
+    public function way() {
         $date = date(DATE_RFC2822);
         $date = explode(' ',$date);
         $day = $date[1];
@@ -65,7 +74,7 @@ class onway {
                     $sheet->setCellValue('A'.$i, $old_sheet[$i]['A']);
                 }
             }
-        }*/ 
+        }*/
         $header = new PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
         $header->setName('Encabezado');
         $header->setDescription('Logo');
@@ -76,9 +85,19 @@ class onway {
         $write = new Xlsx($new_sheet);
         $write->save($sheet);
     }
+
+    public function financial(){
+        $key = '490c3102f159d8f38df04a624784b094';
+        $uri = 'http://www.apilayer.net/api/live?access_key='.$key.'&format=1';
+        $api = json_decode(file_get_contents($uri));
+        $tc = $api->quotes->USDMXN + .20;
+        return $tc;
+        
+    }
 }
-//$a = new onway;
-//$a->way();
+$a = new onway;
+$a->financial();
+/*
 $template = IOFactory::load('./template.xlsx');
 $list = IOFactory::load('./inventario 11.xlsx');
 $data = $list->getActiveSheet()->toArray(null, true, true, true);
@@ -144,29 +163,30 @@ echo '
     </thead>
 ';
 for($i=1;$i<$count;$i++){
-    $meet = $connection->query('SELECT B FROM dataextract WHERE B = "'.$data[$i]["B"].'"');
+    $meet = $connection->query('SELECT B FROM dataextract WHERE B = "'.$data[$i]["B"].'" AND K > "0"');
     $meet = $meet->fetch_array(MYSQLI_ASSOC);
     if($meet["B"] == $data[$i]["B"]){
         echo '
-        <tr>
-            <td>'.$data[$i]["A"].'</td>
-            <td>'.$data[$i]["B"].'</td>
-            <td>'.$data[$i]["C"].'</td>
-            <td>'.$data[$i]["D"].'</td>
-            <td>'.$data[$i]["E"].'</td>
-            <td>'.$data[$i]["F"].'</td>
-            <td>'.$data[$i]["G"].'</td>
-            <td>'.$data[$i]["H"].'</td>
-            <td>'.$data[$i]["I"].'</td>
-            <td>'.$data[$i]["J"].'</td>
-            <td>'.$data[$i]["K"].'</td>
-        </tr>
-        ';
+            <tr>
+                <td>'.$data[$i]["A"].'</td>
+                <td>'.$data[$i]["B"].'</td>
+                <td>'.$data[$i]["C"].'</td>
+                <td>'.$data[$i]["D"].'</td>
+                <td>'.$data[$i]["E"].'</td>
+                <td>'.$data[$i]["F"].'</td>
+                <td>'.$data[$i]["G"].'</td>
+                <td>'.$data[$i]["H"].'</td>
+                <td>'.$data[$i]["I"].'</td>
+                <td>'.$data[$i]["J"].'</td>
+                <td>'.$data[$i]["K"].'</td>
+            </tr>
+            ';
     }
 }
 echo '
     </table>
 ';
+
 
 
 class readHTML{
@@ -564,6 +584,4 @@ class libraries {
 
     }
 }
-
-
-?>
+*/

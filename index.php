@@ -18,6 +18,9 @@ $a->_upload();
 <html>
     <head>
         <title>Blackship</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <script src="https://semantic-ui.com/javascript/library/jquery.min.js"></script>
         <script src="assets/semantic-ui/semantic.min.js"></script>
         <link rel="stylesheet" type="text/css" href="assets/semantic-ui/semantic.css" />
@@ -105,7 +108,10 @@ $a->_upload();
         </script>
 
             <?php
-
+                $in = file_gets_contents('inventory/template.html');
+                $fo = fopen('inventory/ideac '.date('d-m-y'), 'w+');
+                $fw = fwrite($fo, $in);
+                $fc = fclose($fo);
             ?>
 
     </body>
