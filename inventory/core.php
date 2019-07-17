@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(0);
+
 
 require '../vendor/autoload.php';
 
@@ -22,7 +22,7 @@ require '../vendor/PHPMailer/src/SMTP.php';
 set_time_limit(500);
 
 header('Content-Type: text/html; charset=utf-8');
-//header('Content-Type: application/json');
+#header('Content-Type: application/json');
 
 class onway {
 
@@ -35,10 +35,11 @@ class onway {
             $error[] = 'No se pudo completar la acción. Linea 17 inventory/core.php'; 
         }*/
         $dair = $old = $mon.'/inventario '.$day.'.xlsx';
-        $old = $mon.'/inventario '.$day.'.csv';
+        $old = $mon.'/inventario.csv';
         $old = IOFactory::load($old);
         $old_sheet = $old->getActiveSheet()->toArray(null, true, true, true);
-        $new_sheet = new Spreadsheet();
+        $new_sheet = new PhpOffice\PhpSpreadsheet\Spreadsheet();;
+        $txt = $new_sheet;
         $properties = $new_sheet->getProperties()
             ->setCreator('Daniel Garcia')
             ->setLastModifiedBy('Daniel Garcia')
@@ -47,16 +48,7 @@ class onway {
             ->setDescription('Lista de precios productos Comercializadora Ideac SA de CV')
             ->setKeywords('')
             ->setCategory('Lista');
-        $new_sheet->setActiveSheetIndex(0);            
         $sheet = $new_sheet->getActiveSheet();
-        $sheet->setCellValue('E1', 'Gerente de ventas');
-        $sheet->setCellValue('E2', 'Email: sanchez.miguel@ideac.com.mx');
-        $sheet->setCellValue('E3', 'skype: miguel.sanchez@ideac.mx');
-        $sheet->setCellValue('E4', 'Cel. 33-3147-8028');
-        $sheet->setCellValue('E5', 'Tel. 33-3336-8225');
-        $sheet->setCellValue('F5', ''.date('d-m-Y').'');
-        $sheet->setCellValue('F6', '$var');
-        $sheet->getStyle('F5:F6')->getFill()->getStartColor()->setARGB('#95BE20');
         $sheet->setCellValue('A7', 'Número de artículo mayorista');
         $sheet->setCellValue('B7', 'Número de actículo de fabricante');
         $sheet->setCellValue('C7', 'Número EAN');
@@ -67,23 +59,58 @@ class onway {
         $sheet->setCellValue('H7', 'Disponibilidad CDMX');
         $sheet->setCellValue('I7', 'Disponibilidad GDL');
         $sheet->setCellValue('J7', 'TOTAL');
-        $sheet->getStyle('A7:J7')->getFill()->getStartColor()->setARGB('#95BE20');
-        /*for($i=1; $i = count($old_sheet); $i++){
-            if($old_sheet[$i]['I'] != 0 && $old_sheet[$i]['J'] != 0){
-                for($i=8;$i=count($old_sheet); $i++){
-                    $sheet->setCellValue('A'.$i, $old_sheet[$i]['A']);
-                }
+        $sheet->getTabColor()->setARGB('#95BE20');
+        for($i=8;$i < count($old_sheet)+1; $i++){
+            $test = $old_sheet[$i]['A'];
+            $test1 = array($i => $test);
+            
+            $CB = $old_sheet[$i]['B'];
+            $CB = array($i => $CB); 
+
+            $CC = $old_sheet[$i]['C'];
+            $CC = array($i => $CC);
+
+            $CD = $old_sheet[$i]['D'];
+            $CD = array($i => $CD);
+
+            $CF = $old_sheet[$i]['F'];
+            $CF = array($i => $CF);
+
+            $CG = $old_sheet[$i]['G'];
+            $CG = array($i => $CG);
+
+            $CH = $old_sheet[$i]['H'];  #whore
+            $CH = array($i => $CH);     #whore
+
+            $CI = $old_sheet[$i]['I'];
+            $CI = array($i => $CI);
+
+            $CJ = $old_sheet[$i]['J'];
+            $CJ = array($i => $CJ);
+
+            $CK = $CI + $CJ;
+
+            $ti = $sheet->fromArray($test1, NULL, 'A'.$i);
+            $t1 = $sheet->fromArray($CB, NULL, 'B'.$i);
+            $t2 = $sheet->fromArray($CC, NULL, 'C'.$i);
+            $t3 = $sheet->fromArray($CD, NULL, 'D'.$i);
+            $t4 = $sheet->fromArray($CF, NULL, 'E'.$i);
+            $t5 = $sheet->fromArray($CG, NULL, 'F'.$i);
+            $t6 = $sheet->fromArray(array('A' => 'Dólar'), NULL, 'G'.$i);
+            if($CJ[$i] != NULL){
+                $t7 = $sheet->fromArray($CI, NULL, 'H'.$i);
+                $t8 = $sheet->fromArray($CJ, NULL, 'I'.$i);
             }
-        }*/
+            $t9 = $sheet->setCellValue('J'.$i, NULL, '=SUMA(H'.$i.' + I'.$i.')');
+        }
         $header = new PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
         $header->setName('Encabezado');
         $header->setDescription('Logo');
         $header->setPath('header.PNG');
-        $header->setWorksheet($new_sheet->getActiveSheet);
+        $header->setWorksheet($txt->getActiveSheet());
         $header->setCoordinates('A1');
-        $header->setWorkSheet($header);
         $write = new Xlsx($new_sheet);
-        $write->save($sheet);
+        $write->save($dair);
     }
 
     public function financial(){
@@ -96,7 +123,8 @@ class onway {
     }
 }
 $a = new onway;
-$a->financial();
+$a->way();
+
 /*
 $template = IOFactory::load('./template.xlsx');
 $list = IOFactory::load('./inventario 11.xlsx');
@@ -116,7 +144,7 @@ foreach($data as $rows){
     $JColumn = $rows['J'];
     $KColumn = utf8_decode($rows['I']) + $rows['J'];
     
-    //$post = $connection->query('INSERT INTO dataextract VALUES ("'.$AColumn.'", "'.$BColumn.'", "'.$CColumn.'", "'.$DColumn.'", "'.$EColumn.'", "'.$FColumn.'", "'.$GColumn.'", "'.$HColumn.'", "'.$IColumn.'", "'.$JColumn.'","'.$KColumn.'"    ) ');
+    $post = $connection->query('INSERT INTO dataextract VALUES ("'.$AColumn.'", "'.$BColumn.'", "'.$CColumn.'", "'.$DColumn.'", "'.$EColumn.'", "'.$FColumn.'", "'.$GColumn.'", "'.$HColumn.'", "'.$IColumn.'", "'.$JColumn.'","'.$KColumn.'"    ) ');
     
 }
 echo '
