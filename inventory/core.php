@@ -1,6 +1,6 @@
 <?php
 
-
+#ini_set('memory_limit', '-1');
 
 require '../vendor/autoload.php';
 
@@ -9,6 +9,9 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\IReader;
 use PhpOffice\PhpSpreadsheet\Style\Font;
+use PhpOffice\PhpSpreadsheet\Worksheet\AutoFilter\Column;
+use PhpOffice\PhpSpreadsheet\Worksheet\AutoFilter\Column\Rule;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -18,13 +21,18 @@ require '../vendor/PHPMailer/src/PHPMailer.php';
 require '../vendor/PHPMailer/src/SMTP.php';
 */
 
-
-set_time_limit(500);
-
 header('Content-Type: text/html; charset=utf-8');
 #header('Content-Type: application/json');
 
 class onway {
+
+    public function financial(){
+        $key = '490c3102f159d8f38df04a624784b094';
+        $uri = 'http://www.apilayer.net/api/live?access_key='.$key.'&format=1';
+        $api = json_decode(file_get_contents($uri));
+        $tc = $api->quotes->USDMXN + .07;
+        return $tc;
+    }
 
     public function way() {
         $date = date(DATE_RFC2822);
@@ -38,7 +46,10 @@ class onway {
         $old = $mon.'/inventario.csv';
         $old = IOFactory::load($old);
         $old_sheet = $old->getActiveSheet()->toArray(null, true, true, true);
-        $new_sheet = new PhpOffice\PhpSpreadsheet\Spreadsheet();;
+        $maxRow = $old->getActiveSheet()->getHighestRow();
+        $maxCol = $old->getActiveSheet()->getHighestColumn();
+        #$old_sheet = $old_sheet->rangeToArray('A1:' . $maxCol . $maxRow);
+        $new_sheet = new PhpOffice\PhpSpreadsheet\Spreadsheet();
         $txt = $new_sheet;
         $properties = $new_sheet->getProperties()
             ->setCreator('Daniel Garcia')
@@ -49,6 +60,18 @@ class onway {
             ->setKeywords('')
             ->setCategory('Lista');
         $sheet = $new_sheet->getActiveSheet();
+        $sheet->getColumnDimension('A')->setWidth(30);
+        $sheet->getColumnDimension('B')->setWidth(33);
+        $sheet->getColumnDimension('C')->setWidth(17);
+        $sheet->getColumnDimension('D')->setWidth(70);
+        $sheet->getColumnDimension('E')->setWidth(21);
+        $sheet->getColumnDimension('F')->setWidth(25);
+        $sheet->getColumnDimension('G')->setWidth(11);
+        $sheet->getColumnDimension('H')->setWidth(22);
+        $sheet->getColumnDimension('I')->setWidth(21);
+        $sheet->getColumnDimension('J')->setWidth(11);
+        $sheet->setCellValue('F5', date('d/m/y'));
+        $sheet->setCellValue('F6', 'TC: '.self::financial());
         $sheet->setCellValue('A7', 'Número de artículo mayorista');
         $sheet->setCellValue('B7', 'Número de actículo de fabricante');
         $sheet->setCellValue('C7', 'Número EAN');
@@ -59,49 +82,62 @@ class onway {
         $sheet->setCellValue('H7', 'Disponibilidad CDMX');
         $sheet->setCellValue('I7', 'Disponibilidad GDL');
         $sheet->setCellValue('J7', 'TOTAL');
-        $sheet->getTabColor()->setARGB('#95BE20');
-        for($i=8;$i < count($old_sheet)+1; $i++){
+        $sheet->getStyle('A7:J7')
+            ->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
+        $sheet->getStyle('A7:J7')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('95BE20');
+
+        $sheet->getStyle('A1:Q6')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FFFFFF');
+
+        for($i=8;$i < count($old_sheet); $i++){
             $test = $old_sheet[$i]['A'];
             $test1 = array($i => $test);
-            
+        
             $CB = $old_sheet[$i]['B'];
-            $CB = array($i => $CB); 
+            $CB1 = array($i => $CB); 
 
             $CC = $old_sheet[$i]['C'];
-            $CC = array($i => $CC);
+            $CC1 = array($i => $CC);
 
             $CD = $old_sheet[$i]['D'];
-            $CD = array($i => $CD);
+            $CD1 = array($i => $CD);
 
             $CF = $old_sheet[$i]['F'];
-            $CF = array($i => $CF);
+            $CF1 = array($i => $CF);
 
             $CG = $old_sheet[$i]['G'];
-            $CG = array($i => $CG);
+            $CG1 = array($i => $CG);
 
             $CH = $old_sheet[$i]['H'];  #whore
-            $CH = array($i => $CH);     #whore
+            $CH1 = array($i => $CH);     #whore
 
             $CI = $old_sheet[$i]['I'];
-            $CI = array($i => $CI);
+            $CI1 = array($i => $CI);
 
             $CJ = $old_sheet[$i]['J'];
-            $CJ = array($i => $CJ);
+            $CJ1 = array($i => $CJ);
 
             $CK = $CI + $CJ;
 
             $ti = $sheet->fromArray($test1, NULL, 'A'.$i);
-            $t1 = $sheet->fromArray($CB, NULL, 'B'.$i);
-            $t2 = $sheet->fromArray($CC, NULL, 'C'.$i);
-            $t3 = $sheet->fromArray($CD, NULL, 'D'.$i);
-            $t4 = $sheet->fromArray($CF, NULL, 'E'.$i);
-            $t5 = $sheet->fromArray($CG, NULL, 'F'.$i);
+            $t1 = $sheet->fromArray($CB1, NULL, 'B'.$i);
+            $t2 = $sheet->fromArray($CC1, NULL, 'C'.$i);
+            $sheet->getStyle('C8:C399')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER);
+            $sheet->getStyle('C8:C339')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+
+            $t3 = $sheet->fromArray($CD1, NULL, 'D'.$i);
+            $t4 = $sheet->fromArray($CF1, NULL, 'E'.$i);
+            $t5 = $sheet->fromArray($CG1, NULL, 'F'.$i);
             $t6 = $sheet->fromArray(array('A' => 'Dólar'), NULL, 'G'.$i);
-            if($CJ[$i] != NULL){
-                $t7 = $sheet->fromArray($CI, NULL, 'H'.$i);
-                $t8 = $sheet->fromArray($CJ, NULL, 'I'.$i);
-            }
-            $t9 = $sheet->setCellValue('J'.$i, NULL, '=SUMA(H'.$i.' + I'.$i.')');
+
+            $t7 = $sheet->fromArray($CI1, NULL, 'H'.$i);
+            $t8 = $sheet->fromArray($CJ1, NULL, 'I'.$i);
+            $ide = $sheet->setCellValue('AD'.$i, $i);
+            $t9 = $sheet->setCellValue('J'.$i, '=H'. $i . ' + I' . $i);
+            $sheet->getCell('J'.$i)->getStyle()->setQuotePrefix(true);
         }
         $header = new PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
         $header->setName('Encabezado');
@@ -112,18 +148,10 @@ class onway {
         $write = new Xlsx($new_sheet);
         $write->save($dair);
     }
-
-    public function financial(){
-        $key = '490c3102f159d8f38df04a624784b094';
-        $uri = 'http://www.apilayer.net/api/live?access_key='.$key.'&format=1';
-        $api = json_decode(file_get_contents($uri));
-        $tc = $api->quotes->USDMXN + .20;
-        return $tc;
-        
-    }
 }
 $a = new onway;
 $a->way();
+echo $a->financial();
 
 /*
 $template = IOFactory::load('./template.xlsx');
