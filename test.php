@@ -1,37 +1,28 @@
 <?Php
-
-// set up basic connection 
-$ftp_server = "ftp.comideac.com"; 
-$conn_id = ftp_ssl_connect($ftp_server); 
-
-// login with username and password 
-$ftp_user_name = "garcia.daniel@ideac.com.mx"; 
-$ftp_user_pass = "zWab!Llz-_j)"; 
-$login_result = ftp_login($conn_id, $ftp_user_name, $ftp_user_pass); 
-ftp_pasv($conn_id, true); 
-// check connection 
-if ((!$conn_id) || (!$login_result)) { 
-    echo "FTP connection has failed!"; 
-    echo "Attempted to connect to $ftp_server for user $ftp_user_name"; 
-    exit; 
-} else { 
-    echo "Connected to $ftp_server, for user $ftp_user_name"; 
-} 
-
-if (ftp_chdir($conn_id, "ideac.com.mx/inventario")) {
-    echo "\nCurrent directory is now: " . ftp_pwd($conn_id) . "\n";
-    if (ftp_get($conn_id, 'ideac '.date('d-m-y').'.xlsx', 'inventario.csv', FTP_BINARY)) {
-        echo "Se ha guardado satisfactoriamente en ideac ".date('d-m-y').".xlsx\n";
-    } else {
-        echo "Ha habido un problema\n";
-    }
-} else { 
-    echo "Couldn't change directory\n";
-}
-
-$buff = ftp_rawlist($conn_id, '.'); 
-//var_dump($buff); 
-ftp_close($conn_id);  
+    #header('Content-Type: application/json');
+    //serverName\instanceName, portNumber (por defecto es 1433)
+    $serverName = "SENDBOXSERVER\\COMPAC2"; 
+    $connectionInfo = array( "Database"=>"adCOMERCIALIZADORAIDE");
+    $conn = sqlsrv_connect( $serverName, $connectionInfo);
+    
+    if( $conn ) {
+        $test = sqlsrv_query($conn, 'SELECT * FROM dbo.admClientes', array(), array("Scrollable" => SQLSRV_CURSOR_KEYSET));
+        $test1 = sqlsrv_num_rows($test);
+        var_dump($test1);
+        for($i=0;$i < $test1; $i++){
+            $getReason = sqlsrv_query($conn, 'SELECT * FROM dbo.admClientes WHERE CIDCLIENTEPROVEEDOR = '.$i.'', array(), array("Scrollable" => SQLSRV_CURSOR_KEYSET));
+            $getReason = sqlsrv_fetch_array($getReason, SQLSRV_FETCH_ASSOC);
+            $getMail = sqlsrv_query($conn, 'SELECT * FROM dbo.admDomicilios WHERE CIDCATALOGO = '.$i.'');
+            $getMail = sqlsrv_fetch_array($getMail, SQLSRV_FETCH_ASSOC);
+            echo '<table width="970" border="1">';
+            echo '<tr><td width="600">'.utf8_encode($getReason['CRAZONSOCIAL']) . '</td><td width="370">' . utf8_encode($getMail['CEMAIL']) . "</td></tr>";
+            echo '</table>';
+            #var_dump(utf8_encode($test['CRAZONSOCIAL']));
+        }
+   }else{
+        echo "Connection could not be established.<br />";
+        die( print_r( sqlsrv_errors(), true));
+   }
 
 
 

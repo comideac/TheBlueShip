@@ -184,63 +184,29 @@ class onway {
     }
 }
 
+
 class shipper {
     public function x_000(){
 
-        $mailist = array(
-            'judithmm75@prodigy.net.mx',
-            'alejandro@ddtech.mx',
-            'cristian.mercado@dimercom.mx',
-            'mtz.marco@sendbox.global',
-            'administracion@pcx.com.mx',
-            'apino@empretel.com.mx',
-            'miguelsanchezr@hotmail.com',
-            'ventas2@itecom.mx',
-            'Ivan.vargas@mipc.com.mx',
-            'ventas@itecom.mx',
-            'inncomputo@gmail.com',
-            'jonathan@coregaming.com.mx',
-            'amoreno.0185@hotmail.com',
-            'alberto.villa@comparateca.com',
-            'cespino@sistecomp.com',
-            'contacto@pcmig.com.mx',
-            'norozco@digitalife.com.mx',
-            'jose.avila@pcac.mx',
-            'lrobertohdza11@gmail.com',
-            'geraldo.orozco@pcel.com',
-            'i.garcia@corpavitec.mx',
-            'alejandroalper10@gmail.com',
-            'egm@egm.mx',
-            'mrr_mario@hotmail.com',
-            'jaime.matosic@hotmail.com',
-            'jonathan.nishikawa@gmail.com',
-            'sisexper@icloud.com',
-            'francisco@grupoisco.com',
-            'compuadmi@live.com',
-            'merida@tecnomart.com.mx',
-            'administracion@highpro.com.mx',
-            'facturacion@tcvmexico.com',
-            'facturacionlsicolima@gmail.com',
-            'lorena.martinezdecme@outlook.com',
-            'almacen.epcmx@gmail.com',
-            'chris.osornio@raptortech.com.mx',
-            'facturación@cyberpuerta.mx',
-            'fpazpe@hotmail.com',
-            'proasdf@hotmail.com',
-            'javier.pcsb@hotmail.com',
-            'ventas@pcminera.com',
-            'palomino_cx@hotmail.com',
-            'ponchito_1189@hotmail.com',
-            'pluan@longview.com.mx',
-            'jorgeg3@hotmail.com',
-            'JUST.GAMING.MAZATLAN@GMAIL.COM',
-            'ABUNDIZG@HOTMAIL.COM',
-            'israel@tecnocloud.mx',
-            'adanmejiatol.17@hotmail.com',
-            'compras1@sumitel.com',
-            'luis.vazquez@digitalife.com.mx',
-            'giovanni.moreno@digitalife.com.mx',
-        );
+        $serverName = "SENDBOXSERVER\\COMPAC2"; 
+        $connectionInfo = array( "Database"=>"adCOMERCIALIZADORAIDE");
+        $conn = sqlsrv_connect( $serverName, $connectionInfo);
+        
+        if( $conn ) {
+            $test = sqlsrv_query($conn, 'SELECT * FROM dbo.admClientes', array(), array("Scrollable" => SQLSRV_CURSOR_KEYSET));
+            $test1 = sqlsrv_num_rows($test);
+            var_dump($test1);
+            for($i=0;$i < $test1; $i++){
+                $getReason = sqlsrv_query($conn, 'SELECT * FROM dbo.admClientes WHERE CIDCLIENTEPROVEEDOR = '.$i.'', array(), array("Scrollable" => SQLSRV_CURSOR_KEYSET));
+                $getReason = sqlsrv_fetch_array($getReason, SQLSRV_FETCH_ASSOC);
+                $getMail = sqlsrv_query($conn, 'SELECT * FROM dbo.admDomicilios WHERE CIDCATALOGO = '.$i.'');
+                $getMail = sqlsrv_fetch_array($getMail, SQLSRV_FETCH_ASSOC);
+                $mailingList = utf8_encode($getMail['CEMAIL']);
+            }
+        }else{
+            echo "Connection could not be established.<br />";
+            die( print_r( sqlsrv_errors(), true));
+        }
 
         $mail = new PHPMailer(true);
         try {
@@ -257,11 +223,11 @@ class shipper {
         
             //Recipients
             $mail->setFrom('garcia.daniel@ideac.com.mx', 'Daniel Garcia');
-            $mail->addAddress('daniel4581@protonmail.com', 'To Daniel Garcia');     // Add a recipient
-            #$mail->addAddress('ellen@example.com');               // Name is optional
+            #$mail->addAddress('sanchez.miguel@ideac.com.mx', 'To Daniel Garcia');     // Add a recipient
+            $mail->addAddress('warcraf_dani@hotmail.es');               // Name is optional
             #$mail->addReplyTo('info@example.com', 'Information');
             #$mail->addCC('cc@example.com');
-            #$mail->addBCC('daniel4581@protonmail.com');
+            $mail->addBCC('daniel4581@protonmail.com');
         
             // Attachments
             $mail->addAttachment('./Jul/ideac '.date('d-m-y').'.csv');         // Add attachments
