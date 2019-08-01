@@ -32,8 +32,8 @@ class onway {
         $conn_id = ftp_ssl_connect($ftp_server); 
 
         // login with username and password 
-        $ftp_user_name = "garcia.daniel@ideac.com.mx"; 
-        $ftp_user_pass = "zWab!Llz-_j)"; 
+        $ftp_user_name = "**"; 
+        $ftp_user_pass = "**"; 
         $login_result = ftp_login($conn_id, $ftp_user_name, $ftp_user_pass); 
         ftp_pasv($conn_id, true); 
         // check connection 
@@ -45,7 +45,7 @@ class onway {
             echo "Connected to $ftp_server, for user $ftp_user_name"; 
         } 
 
-        if (ftp_chdir($conn_id, "ideac.com.mx/inventario")) {
+        if (ftp_chdir($conn_id, "**mx/inventario")) {
             echo "\nCurrent directory is now: " . ftp_pwd($conn_id) . "\n";
             if (ftp_get($conn_id, 'ideac '.date('d-m-y').'.csv', 'inventario.csv', FTP_BINARY)) {
                 echo "Se ha guardado satisfactoriamente en 'ideac ".date('d-m-y').".csv'\n";
@@ -63,7 +63,7 @@ class onway {
     }
 
     public function financial(){
-        $key = '490c3102f159d8f38df04a624784b094';
+        $key = '**';
         $uri = 'http://www.apilayer.net/api/live?access_key='.$key.'&format=1';
         $api = json_decode(file_get_contents($uri));
         $tc = $api->quotes->USDMXN + .07;
@@ -188,8 +188,8 @@ class onway {
 class shipper {
     public function x_000(){
 
-        $serverName = "SENDBOXSERVER\\COMPAC2"; 
-        $connectionInfo = array( "Database"=>"adCOMERCIALIZADORAIDE");
+        $serverName = "**\\**"; 
+        $connectionInfo = array( "Database"=>"**");
         $conn = sqlsrv_connect( $serverName, $connectionInfo);
         
         if( $conn ) {
@@ -213,21 +213,21 @@ class shipper {
             //Server settings
             $mail->SMTPDebug = 2;                                       // Enable verbose debug output
             $mail->isSMTP();                                            // Set mailer to use SMTP
-            $mail->Host       = 'cs9.bluehost.com;cs9.bluehost.com';    // Specify main and backup SMTP servers
+            $mail->Host       = '**.**.com;**.**.com';    // Specify main and backup SMTP servers
             $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-            $mail->Username   = 'garcia.daniel@ideac.com.mx';           // SMTP username
-            $mail->Password   = '148qqu2c69ub';                         // SMTP password
+            $mail->Username   = '**.**@**.**.mx';           // SMTP username
+            $mail->Password   = '**';                         // SMTP password
             $mail->SMTPSecure = 'ssl';                                  // Enable TLS encryption, `ssl` also accepted
             $mail->Port       = 465;                                    // TCP port to connect to
             var_dump($mail);
         
             //Recipients
-            $mail->setFrom('garcia.daniel@ideac.com.mx', 'Daniel Garcia');
+            $mail->setFrom('**.**@**.**.mx', '** **');
             #$mail->addAddress('sanchez.miguel@ideac.com.mx', 'To Daniel Garcia');     // Add a recipient
-            $mail->addAddress('warcraf_dani@hotmail.es');               // Name is optional
+            $mail->addAddress('**@**.es');               // Name is optional
             #$mail->addReplyTo('info@example.com', 'Information');
             #$mail->addCC('cc@example.com');
-            $mail->addBCC('daniel4581@protonmail.com');
+            $mail->addBCC('**@**.com');
         
             // Attachments
             $mail->addAttachment('./Jul/ideac '.date('d-m-y').'.csv');         // Add attachments
