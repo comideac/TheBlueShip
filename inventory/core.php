@@ -28,7 +28,7 @@ class onway {
 
     public function eftipi(){
         // set up basic connection 
-        $ftp_server = "ftp.comideac.com"; 
+        $ftp_server = "ftp.**.com"; 
         $conn_id = ftp_ssl_connect($ftp_server); 
 
         // login with username and password 
