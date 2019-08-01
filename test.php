@@ -1,8 +1,8 @@
 <?Php
     #header('Content-Type: application/json');
     //serverName\instanceName, portNumber (por defecto es 1433)
-    $serverName = "SENDBOXSERVER\\COMPAC2"; 
-    $connectionInfo = array( "Database"=>"adCOMERCIALIZADORAIDE");
+    $serverName = "**\\**"; 
+    $connectionInfo = array( "Database"=>"**");
     $conn = sqlsrv_connect( $serverName, $connectionInfo);
     
     if( $conn ) {
